@@ -13,7 +13,7 @@ namespace Lich.Cards
 
         public override IEnumerator Init()
         {
-            while (!(LichClassCard.card && TankyerPhy.card && SelfSafety.card && LifestealConnection.card && UndeadBody.card)) yield return null;
+            while (!(LichClassCard.card && TankyerPhy.card && SelfSafety.card && LifestealConnection.card && UndeadBody.card && EmergencyEvac.card && EmpBlasts.card)) yield return null;
             ClassesRegistry.Register(LichClassCard.card, CardType.Entry, 1);
             ClassesRegistry.Register(TankyerPhy.card, CardType.Card);
             ClassesRegistry.Register(SelfSafety.card, CardType.Card, 1);

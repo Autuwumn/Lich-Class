@@ -23,8 +23,8 @@ namespace Lich.Cards
 
         public override CardDetails Details => new CardDetails
         {
-            Title = "Emp Blasts",
-            Description = "Every 3 seconds, phylactery release an emp blast\nStacking this card reduces cd",
+            Title = "Energy Explusion",
+            Description = "Every 5 seconds, phylactery release your block effects\nStacking this card reduces cd",
             ModName = Lich.ModInitials,
             Art = null,
             Rarity = CardInfo.Rarity.Rare,

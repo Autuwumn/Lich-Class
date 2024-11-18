@@ -71,7 +71,7 @@ namespace Lich
             CustomCard.BuildCard<LifestealConnection>((card) => { LifestealConnection.card = card; card.SetAbbreviation("Lc"); });
             CustomCard.BuildCard<UndeadBody>((card) => { UndeadBody.card = card; card.SetAbbreviation("Ub"); });
             CustomCard.BuildCard<EmergencyEvac>((card) => { EmergencyEvac.card = card; card.SetAbbreviation("Ee"); });
-            CustomCard.BuildCard<EmpBlasts>((card) => { EmpBlasts.card = card; card.SetAbbreviation("Eb"); });
+            CustomCard.BuildCard<EmpBlasts>((card) => { EmpBlasts.card = card; card.SetAbbreviation("Ee"); });
         }
     }
 }

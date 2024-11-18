@@ -23,7 +23,7 @@ namespace Lich.Monos
         private float oldHealth = 100;
         private float newHealth = 100;
 
-        private float cd = 3;
+        private float cd = 5;
         private float counter = 0;
 
         private void FixedUpdate()
@@ -36,23 +36,28 @@ namespace Lich.Monos
                     counter = 0;
                     BlastThem();
                 }
+                if(counter >= 0.1f)
+                {
+                    gameObject.GetComponent<CircleCollider2D>().enabled = true;
+                }
             }
         }
         private void BlastThem()
         {
-            print("blast");
-            GameObject empObj = null;
+            gameObject.GetComponent<CircleCollider2D>().enabled = false;
             for(var i = 0; i < Owner.transform.childCount; i++)
             {
                 var c = Owner.transform.GetChild(i);
-                if(c.name == "PhyEMP")
+                if(c.GetComponent<BlockTrigger>())
                 {
-                    empObj = c.gameObject;
+                    var blockObj = c.gameObject;
+                    blockObj.transform.position = gameObject.transform.position;
+                    blockObj.GetComponent<BlockTrigger>().triggerEvent.Invoke();
+                    if(blockObj.GetComponent<SpawnObjects>()) blockObj.GetComponent<SpawnObjects>().Spawn();
+                    Owner.GetComponent<Block>().CancelInvoke();
+                    blockObj.transform.position = Owner.transform.position;
                 }
             }
-            empObj.transform.position = gameObject.transform.position;
-            empObj.GetComponent<BlockTrigger>().triggerEvent.Invoke();
-            empObj.transform.position = Owner.gameObject.transform.position;
         }
         public void Awake()
         {
@@ -93,14 +98,7 @@ namespace Lich.Monos
                     empMult *= 0.75f;
                 }
             }
-
-            if (Emp && !Owner.GetComponentInChildren<PhylacteryOwner>().hasEMP)
-            {
-                var a =Instantiate(Lich.empEffect, Owner.gameObject.transform);
-                a.name = "PhyEMP";
-                Owner.GetComponentInChildren<PhylacteryOwner>().hasEMP = true;
-            }
-            cd = 3f * empMult;
+            cd = 5f * empMult;
             if (Evac) EvacHP = 0.75f;
             var de = gameObject.GetComponent<DamagableEvent>();
             de.maxHP = 100 * Mathf.Pow(1.5f, Toughs);
