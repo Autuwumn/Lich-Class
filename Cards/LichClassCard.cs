@@ -45,6 +45,7 @@ namespace Lich.Cards
         }
         protected override void Added(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            Lich.instance.PhyMan.SetupPhylactery(player);
             foreach (var temPlayer in PlayerManager.instance.players)
             {
                 if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(temPlayer.data.stats).blacklistedCategories.Contains(Lich.LichCard))
@@ -52,7 +53,6 @@ namespace Lich.Cards
                     ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(temPlayer.data.stats).blacklistedCategories.Add(Lich.LichCard);
                 }
             }
-            Lich.instance.PhyMan.SetupPhylactery(player);
         }
     }
 }

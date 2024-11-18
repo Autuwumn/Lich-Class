@@ -9,6 +9,8 @@ using UnboundLib.Cards;
 using UnityEngine;
 using Lich.Cards;
 using ModsPlus;
+using System.Linq;
+using System.Reflection;
 
 namespace Lich
 {
@@ -36,6 +38,8 @@ namespace Lich
 
         internal static CardCategory LichCard;
 
+        public static GameObject empEffect;
+
         void Start()
         {
             var harmony = new Harmony(ModId);
@@ -56,8 +60,18 @@ namespace Lich
 
             LichCard = CustomCardCategories.instance.CardCategory("LichCard");
 
+            var fieldInfo = typeof(UnboundLib.Utils.CardManager).GetField("defaultCards", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            var vanillaCards = (CardInfo[])fieldInfo.GetValue(null);
+            var empCard = vanillaCards.Where((c) => c.cardName.ToLower() == "emp").ToArray()[0];
+            empEffect = empCard.gameObject.GetComponent<CharacterStatModifiers>().AddObjectToPlayer.gameObject;
 
             CustomCard.BuildCard<LichClassCard>((card) => { LichClassCard.card = card; card.SetAbbreviation("Lc"); });
+            CustomCard.BuildCard<TankyerPhy>((card) => { TankyerPhy.card = card; card.SetAbbreviation("Tp"); });
+            CustomCard.BuildCard<SelfSafety>((card) => { SelfSafety.card = card; card.SetAbbreviation("Ss"); });
+            CustomCard.BuildCard<LifestealConnection>((card) => { LifestealConnection.card = card; card.SetAbbreviation("Lc"); });
+            CustomCard.BuildCard<UndeadBody>((card) => { UndeadBody.card = card; card.SetAbbreviation("Ub"); });
+            CustomCard.BuildCard<EmergencyEvac>((card) => { EmergencyEvac.card = card; card.SetAbbreviation("Ee"); });
+            CustomCard.BuildCard<EmpBlasts>((card) => { EmpBlasts.card = card; card.SetAbbreviation("Eb"); });
         }
     }
 }

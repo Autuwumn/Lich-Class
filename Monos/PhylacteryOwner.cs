@@ -12,7 +12,9 @@ namespace Lich.Monos
     public class PhylacteryOwner : CardEffect
     {
         public Phylactery Phy;
-        bool PhylacteryAlive = true;
+        public bool PhylacteryAlive = true;
+        public bool hasEMP = false;
+
         public override IEnumerator OnRoundStart(IGameModeHandler gameModeHandler)
         {
             if(Phy == null) Phy = Lich.instance.PhyMan.Phys.Where((p) => p.Owner == player).FirstOrDefault();
@@ -20,9 +22,22 @@ namespace Lich.Monos
             PhylacteryAlive = true;
             yield return null;
         }
-        public override void OnDealtDamage(Vector2 damage, bool selfDamage)
+        public void FixedUpdate()
         {
-            if(damage.magnitude >= player.data.health)
+            if (PhylacteryAlive)
+            {
+                characterStats.remainingRespawns = 999;
+                characterStats.respawns = 999;
+            } else
+            {
+                characterStats.remainingRespawns = 0;
+                characterStats.respawns = 0;
+            }
+        }
+        public override void OnTakeDamage(Vector2 damage, bool selfDamage)
+        {
+            if (Phy == null) Phy = Lich.instance.PhyMan.Phys.Where((p) => p.Owner == player).FirstOrDefault();
+            if (damage.magnitude >= player.data.health)
             {
                 player.transform.position = Phy.transform.position;
             }
