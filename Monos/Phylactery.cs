@@ -99,6 +99,7 @@ namespace Lich.Monos
                 }
             }
             cd = 5f * empMult;
+            if (cd <= 1f) cd = 1f;
             if (Evac) EvacHP = 0.75f;
             var de = gameObject.GetComponent<DamagableEvent>();
             de.maxHP = 100 * Mathf.Pow(1.5f, Toughs);
