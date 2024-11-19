@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnboundLib.GameModes;
+using UnboundLib.Networking;
 using UnityEngine;
 
 namespace Lich.Monos
@@ -15,11 +16,16 @@ namespace Lich.Monos
         public bool PhylacteryAlive = true;
         public bool hasEMP = false;
 
-        public override IEnumerator OnRoundStart(IGameModeHandler gameModeHandler)
+        public override IEnumerator OnPointStart(IGameModeHandler gameModeHandler)
         {
             if(Phy == null) Phy = Lich.instance.PhyMan.Phys.Where((p) => p.Owner == player).FirstOrDefault();
-            Phy.transform.position = player.transform.position;
-            PhylacteryAlive = true;
+            Phy.SpawnPhylactery();
+            yield return null;
+        }
+        public override IEnumerator OnPointEnd(IGameModeHandler gameModeHandler)
+        {
+            if (Phy == null) Phy = Lich.instance.PhyMan.Phys.Where((p) => p.Owner == player).FirstOrDefault();
+            Phy.KillPhylactery();
             yield return null;
         }
         public void FixedUpdate()

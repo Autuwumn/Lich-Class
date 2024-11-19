@@ -8,6 +8,7 @@ using System.Text;
 using UnboundLib;
 using UnityEngine;
 using Lich.Monos;
+using CardChoiceSpawnUniqueCardPatch.CustomCategories;
 
 namespace Lich.Cards
 {
@@ -42,6 +43,7 @@ namespace Lich.Cards
         {
             statModifiers.respawns = 3;
             statModifiers.health = 0.25f;
+            cardInfo.categories = new CardCategory[] { Lich.LichCard, CustomCardCategories.instance.CardCategory("CardManipulation") };
         }
         protected override void Added(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {

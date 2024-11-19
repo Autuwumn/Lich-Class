@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
+using UnboundLib.Networking;
+using ModsPlus;
+using System.Linq;
+using UnboundLib;
+using Photon.Realtime;
 
 namespace Lich.Monos
 {
@@ -78,34 +83,71 @@ namespace Lich.Monos
             }
 
         }
-        public void SpawnPhylactery()
+        [UnboundRPC]
+        public static void RPC_SpawnPhylactery(float x, float y, float z, int playerid)
         {
-            gameObject.transform.position = Owner.transform.position;
+            var Owner = PlayerManager.instance.GetPlayerWithID(playerid);
+            var Phy = Lich.instance.PhyMan.Phys.Where((p) => p.Owner == Owner).FirstOrDefault();
+            Phy.transform.position = new Vector3(x, y, z);
             Owner.gameObject.GetComponentInChildren<PhylacteryOwner>().PhylacteryAlive = true;
-            Toughs = 0;
-            SelfSafe = false;
-            Evac = false;
-            Emp = false;
-            var empMult = 1f/0.75f;
-            foreach(var c in Owner.data.currentCards)
+            Phy.Toughs = 0;
+            Phy.SelfSafe = false;
+            Phy.Evac = false;
+            Phy.Emp = false;
+            var empMult = 1f / 0.25f;
+            foreach (var c in Owner.data.currentCards)
             {
-                if (c == TankyerPhy.card) Toughs++;
-                if (c == SelfSafety.card) SelfSafe = true;
-                if (c == EmergencyEvac.card) Evac = true;
+                if (c == TankyerPhy.card) Phy.Toughs++;
+                if (c == SelfSafety.card) Phy.SelfSafe = true;
+                if (c == EmergencyEvac.card) Phy.Evac = true;
                 if (c == EmpBlasts.card)
                 {
-                    Emp = true;
+                    Phy.Emp = true;
                     empMult *= 0.75f;
                 }
             }
-            cd = 5f * empMult;
-            if (cd <= 1f) cd = 1f;
-            if (Evac) EvacHP = 0.75f;
-            var de = gameObject.GetComponent<DamagableEvent>();
-            de.maxHP = 100 * Mathf.Pow(1.5f, Toughs);
+            Phy.cd = 5f * empMult;
+            if (Phy.cd <= 1f) Phy.cd = 1f;
+            if (Phy.Evac) Phy.EvacHP = 0.75f;
+            var de = Phy.gameObject.GetComponent<DamagableEvent>();
+            de.maxHP = 100 * Mathf.Pow(1.5f, Phy.Toughs);
             de.currentHP = de.maxHP;
 
-            UpdateHealth();
+            Phy.UpdateHealth();
+        }
+        public void SpawnPhylactery()
+        {
+            if (Owner.data.view.IsMine)
+            {
+                var Phy = Lich.instance.PhyMan.Phys.Where((p) => p.Owner == Owner).FirstOrDefault();
+                Phy.transform.position = Owner.transform.position;
+                Owner.gameObject.GetComponentInChildren<PhylacteryOwner>().PhylacteryAlive = true;
+                Phy.Toughs = 0;
+                Phy.SelfSafe = false;
+                Phy.Evac = false;
+                Phy.Emp = false;
+                var empMult = 1f / 0.25f;
+                foreach (var c in Owner.data.currentCards)
+                {
+                    if (c == TankyerPhy.card) Phy.Toughs++;
+                    if (c == SelfSafety.card) Phy.SelfSafe = true;
+                    if (c == EmergencyEvac.card) Phy.Evac = true;   
+                    if (c == EmpBlasts.card)
+                    {
+                        Phy.Emp = true;
+                        empMult *= 0.75f;
+                    }
+                }
+                Phy.cd = 5f * empMult;
+                if (Phy.cd <= 1f) Phy.cd = 1f;
+                if (Phy.Evac) Phy.EvacHP = 0.75f;
+                var de = Phy.gameObject.GetComponent<DamagableEvent>();
+                de.maxHP = 100 * Mathf.Pow(1.5f, Phy.Toughs);
+                de.currentHP = de.maxHP;
+                Phy.UpdateHealth();
+
+                NetworkingManager.RPC_Others(typeof(Phylactery), nameof(RPC_SpawnPhylactery), Owner.transform.position.x, Owner.transform.position.y, Owner.transform.position.z, Owner.playerID);
+            }
         }
         public void UpdateHealth()
         {

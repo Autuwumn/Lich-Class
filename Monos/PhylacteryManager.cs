@@ -18,21 +18,21 @@ namespace Lich.Monos
 
         public void SetupPhylactery(Player owner)
         {
+            if (!PhotonNetwork.IsMasterClient || PhotonNetwork.OfflineMode) return;
             var curPhy = PhotonNetwork.Instantiate("Lich_Phylactery", owner.transform.position, Quaternion.identity);
             Lich.instance.ExecuteAfterFrames(10, () =>
             {
                 var ownerid = owner.playerID;
                 foreach (var phy in FindObjectsOfType<Phylactery>())
                 {
-                    if (Vector3.Distance(PlayerManager.instance.GetPlayerWithID(ownerid).transform.position, phy.transform.position) < 10 && phy.Owner == null)
+                    if (phy.Owner == null)
                     {
                         phy.Owner = PlayerManager.instance.GetPlayerWithID(ownerid);
                         Lich.instance.PhyMan.Phys.Add(phy);
-                        phy.SpawnPhylactery();
                     }
                 }
             });
-            if (!PhotonNetwork.IsMasterClient || PhotonNetwork.OfflineMode) return;
+            
             NetworkingManager.RPC_Others(typeof(PhylacteryManager), nameof(RPC_SyncOwner), owner.playerID);
             /**var phy = curPhy.GetComponent<Phylactery>();
             phy.Owner = owner;
@@ -44,11 +44,10 @@ namespace Lich.Monos
         {
             foreach(var phy in FindObjectsOfType<Phylactery>())
             {
-                if(Vector3.Distance(PlayerManager.instance.GetPlayerWithID(ownerid).transform.position, phy.transform.position) < 10 && phy.Owner == null)
+                if(phy.Owner == null)
                 {
                     phy.Owner = PlayerManager.instance.GetPlayerWithID(ownerid);
                     Lich.instance.PhyMan.Phys.Add(phy);
-                    phy.SpawnPhylactery();
                 }
             }
         }
